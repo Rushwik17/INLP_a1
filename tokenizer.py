@@ -1,9 +1,13 @@
 import numpy as np
-import os
+from utils import preprocessing
 
-EN_DATASET_RAW = "raw_dataset/cc100_en.jsonl"
-MN_DATASET_RAW = "raw_dataset/cc100_mn.jsonl"
+preprocessing("raw_dataset/cc100_en.jsonl","dataset", "EN")
+preprocessing("raw_dataset/cc100_mn.jsonl","dataset", "MN")
 
-EN_DATASET = "dataset/cc100_en.jsonl"
-MN_DATASET = "dataset/cc100_mn.jsonl"
+EN_TRAIN = "dataset/EN/train.jsonl"
+EN_VAL = "dataset/EN/val.jsonl"
+EN_TEST = "dataset/EN/test.jsonl"
+MN_VAL = "dataset/MN/val.jsonl"
+MN_TRAIN = "dataset/MN/train.jsonl"
+MN_TEST = "dataset/MN/test.jsonl"
 
