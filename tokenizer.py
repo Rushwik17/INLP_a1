@@ -25,7 +25,7 @@ def whitespace(text):
                 tokens.append(current)
                 current = ""
 
-        elif re.match(r"[^\w\s]", ch, re.UNICODE):
+        elif not ch.isalnum():
             if current:
                 tokens.append(current)
                 current = ""
@@ -128,7 +128,7 @@ def bpe(data_path, output_path):
     return final_vocab, sum(final_vocab.values())
 
 def regex_based(text):
-    return re.findall(r"[A-Za-z]+|\d+|[^\w\s]", text, re.UNICODE)
+    return re.findall(r"\d+\.\d+|\d+|\w+|[^\w\s]", text, re.UNICODE)
 
 def train_tokenizer(data_path, algo="whitespace"):
     vocab = defaultdict(int)
@@ -169,5 +169,7 @@ def train_tokenizer(data_path, algo="whitespace"):
 
 # train_tokenizer(EN_TRAIN, "whitespace")
 # train_tokenizer(MN_TRAIN, "whitespace")
-train_tokenizer(EN_TRAIN, "bpe")
-train_tokenizer(MN_TRAIN, "bpe")
+# train_tokenizer(EN_TRAIN, "bpe")
+# train_tokenizer(MN_TRAIN, "bpe")
+train_tokenizer(EN_TRAIN, "regex")
+train_tokenizer(MN_TRAIN, "regex")
