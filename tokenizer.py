@@ -167,9 +167,9 @@ def train_tokenizer(data_path, algo="whitespace"):
 
     return vocab, total_tokens
 
-# train_tokenizer(EN_TRAIN, "whitespace")
-# train_tokenizer(MN_TRAIN, "whitespace")
-# train_tokenizer(EN_TRAIN, "bpe")
-# train_tokenizer(MN_TRAIN, "bpe")
+train_tokenizer(EN_TRAIN, "whitespace")
+train_tokenizer(MN_TRAIN, "whitespace")
+train_tokenizer(EN_TRAIN, "bpe")
+train_tokenizer(MN_TRAIN, "bpe")
 train_tokenizer(EN_TRAIN, "regex")
 train_tokenizer(MN_TRAIN, "regex")
