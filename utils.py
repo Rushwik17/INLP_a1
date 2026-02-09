@@ -3,6 +3,7 @@ import os
 import re
 import unicodedata
 import random
+from collections import defaultdict
 
 def preprocessing(raw_path, clean_path, lan):
     if(os.path.exists(clean_path) and os.path.exists(os.path.join(clean_path, lan))):
@@ -45,3 +46,16 @@ def preprocessing(raw_path, clean_path, lan):
     write_json(test_data, os.path.join(lang_dir, "test.jsonl"))
     
     print(f"Data clean and split complete for {raw_path}")
+    
+def load_tokenizer(vocab_path):
+    final_vocab = defaultdict(int)
+    total_tokens = 0
+
+    with open(vocab_path, "r", encoding="utf-8") as f:
+        for line in f:
+            token, freq = line.rstrip("\n").split("\t")
+            freq = int(freq)
+            final_vocab[token] = freq
+            total_tokens += freq
+
+    return final_vocab, total_tokens

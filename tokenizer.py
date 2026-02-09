@@ -1,7 +1,7 @@
 import numpy as np
 import re
 import json
-from utils import preprocessing
+from utils import preprocessing, load_tokenizer
 from collections import defaultdict
 import os
 
@@ -85,17 +85,7 @@ def bpe(data_path, output_path):
     vocab_path = os.path.join(output_path, "vocab.txt")
     
     if os.path.exists(merges_path) and os.path.exists(vocab_path):
-        final_vocab = defaultdict(int)
-        total_tokens = 0
-
-        with open(vocab_path, "r", encoding="utf-8") as f:
-            for line in f:
-                token, freq = line.rstrip("\n").split("\t")
-                freq = int(freq)
-                final_vocab[token] = freq
-                total_tokens += freq
-
-        return final_vocab, total_tokens
+        return load_tokenizer(vocab_path)
 
     vocab = vocabulary(data_path)
     merges = []
@@ -147,14 +137,7 @@ def train_tokenizer(data_path, algo="whitespace"):
         return bpe(data_path, os.path.join(algo_dir, lan))
     
     if os.path.exists(vocab_path):
-        with open(vocab_path, "r", encoding="utf-8") as f:
-            for line in f:
-                token, freq = line.rstrip("\n").split("\t")
-                freq = int(freq)
-                vocab[token] = freq
-                total_tokens += freq
-                
-        return vocab, total_tokens
+        return load_tokenizer(vocab_path)
         
     with open(data_path, "r", encoding="utf-8") as f:
         for line in f:
