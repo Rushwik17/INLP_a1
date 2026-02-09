@@ -41,13 +41,9 @@ def whitespace(text):
 
 def vocabulary(data_path):
     vocab = defaultdict(int)
-    max_sentences = 200000
-    count = 0
 
     with open(data_path, "r", encoding="utf-8") as f:
         for line in f:
-            if(count >= max_sentences):
-                break
             dump = json.loads(line)
             text = dump.get("text", "")
             if not text:
@@ -56,7 +52,6 @@ def vocabulary(data_path):
             for word in text.split():
                 chars = " ".join(list(word)) + " </w>"
                 vocab[chars] += 1
-        count += 1
 
     return vocab
 
@@ -89,6 +84,19 @@ def bpe(data_path, output_path):
     merges_path = os.path.join(output_path, "merges.txt")
     vocab_path = os.path.join(output_path, "vocab.txt")
     
+    if os.path.exists(merges_path) and os.path.exists(vocab_path):
+        final_vocab = defaultdict(int)
+        total_tokens = 0
+
+        with open(vocab_path, "r", encoding="utf-8") as f:
+            for line in f:
+                token, freq = line.rstrip("\n").split("\t")
+                freq = int(freq)
+                final_vocab[token] = freq
+                total_tokens += freq
+
+        return final_vocab, total_tokens
+
     vocab = vocabulary(data_path)
     merges = []
     
@@ -120,7 +128,7 @@ def bpe(data_path, output_path):
     return final_vocab, sum(final_vocab.values())
 
 def regex_based(text):
-    pass
+    return re.findall(r"[A-Za-z]+|\d+|[^\w\s]", text, re.UNICODE)
 
 def train_tokenizer(data_path, algo="whitespace"):
     vocab = defaultdict(int)
