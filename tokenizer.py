@@ -98,9 +98,6 @@ def bpe(data_path, output_path):
         best_bigram = max(bigram_freq, key=bigram_freq.get)
         vocab = merge_bigram(best_bigram, vocab)
         merges.append(best_bigram)
-        
-        if i % 1000 == 0:
-            print(f"{i*10}% done")
             
     with open(merges_path, "w", encoding="utf-8") as f:
         for a, b in merges:
