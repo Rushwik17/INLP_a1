@@ -146,6 +146,16 @@ def train_tokenizer(data_path, algo="whitespace"):
     if algo == "bpe":
         return bpe(data_path, os.path.join(algo_dir, lan))
     
+    if os.path.exists(vocab_path):
+        with open(vocab_path, "r", encoding="utf-8") as f:
+            for line in f:
+                token, freq = line.rstrip("\n").split("\t")
+                freq = int(freq)
+                vocab[token] = freq
+                total_tokens += freq
+                
+        return vocab, total_tokens
+        
     with open(data_path, "r", encoding="utf-8") as f:
         for line in f:
             dump = json.loads(line)
