@@ -4,6 +4,7 @@ import re
 import unicodedata
 import random
 from collections import defaultdict
+import pickle
 
 def preprocessing(raw_path, clean_path, lan):
     if(os.path.exists(clean_path) and os.path.exists(os.path.join(clean_path, lan))):
@@ -59,3 +60,24 @@ def load_tokenizer(vocab_path):
             total_tokens += freq
 
     return final_vocab, total_tokens
+
+def save_lm(path, count_4, count_3, vocab, continuation_counts):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "wb") as f:
+        pickle.dump({
+            "count_4": dict(count_4),
+            "count_3": dict(count_3),
+            "vocab": list(vocab),
+            "continuation_counts": continuation_counts
+        }, f)
+
+def load_lm(path):
+    with open(path, "rb") as f:
+        data = pickle.load(f)
+
+    count_4 = defaultdict(int, data["count_4"])
+    count_3 = defaultdict(int, data["count_3"])
+    vocab = set(data["vocab"])
+    continuation_counts = data.get("continuation_counts", {})
+
+    return count_4, count_3, vocab, continuation_counts

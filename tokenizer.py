@@ -157,6 +157,47 @@ def train_tokenizer(data_path, algo="whitespace"):
 
     return vocab, total_tokens
 
+def load_merges(merges_path):
+    merges = []
+    with open(merges_path, "r", encoding="utf-8") as f:
+        for line in f:
+            a, b = line.strip().split()
+            merges.append((a, b))
+    return merges
+
+def bpe_on_word(word, merges):
+    symbols = list(word) + ["</w>"]
+
+    for a, b in merges:
+        i = 0
+        while i < len(symbols) - 1:
+            if symbols[i] == a and symbols[i + 1] == b:
+                symbols[i:i+2] = [a + b]
+            else:
+                i += 1
+
+    return symbols
+
+
+def bpe_tokenizer():
+    merges = load_merges("tokenizers/bpe/EN/merges.txt")
+
+    def bpe_tokenize(text):
+        tokens = []
+        for word in text.split():
+            tokens.extend(bpe_on_word(word, merges))
+        return tokens
+
+    return bpe_tokenize
+
+def get_tokenizer(algo):
+    if algo == "whitespace":
+        return whitespace
+    elif algo == "regex":
+        return regex_based
+    elif algo == "bpe":
+        return bpe_tokenizer()
+
 train_tokenizer(EN_TRAIN, "whitespace")
 train_tokenizer(MN_TRAIN, "whitespace")
 train_tokenizer(EN_TRAIN, "bpe")
