@@ -10,4 +10,4 @@ Edit prompts and then run
 ```bash
 language_models.py
 ```
-to get the autocompleted sentences
+to train language models for all tokenizers with and without smoothing as well run autocomplete.

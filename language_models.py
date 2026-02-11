@@ -276,19 +276,18 @@ TOKENIZER = ""
 SMOOTHING = ""
 MODEL_PATH = ""
 
-run_autocomplete_tests()
 
 # ppls = {}
 
-# for TOKENIZER in TOKENIZERS:
-#     for SMOOTHING in SMOOTHINGS:
-#         MODEL_PATH = f"models/{TOKENIZER}_{SMOOTHING}.pkl"
-#         T_counts = defaultdict(int)
-#         tokenizer = get_tokenizer(TOKENIZER)
-#         count_4, count_3, vocab, continuation_counts = lm_train(EN_TRAIN, tokenizer)
-#         for (w1,w2,w3,w4) in count_4:
-#             T_counts[(w1,w2,w3)] += 1
-#         TOTAL_CONT = sum(continuation_counts.values())
+for TOKENIZER in TOKENIZERS:
+    for SMOOTHING in SMOOTHINGS:
+        MODEL_PATH = f"models/{TOKENIZER}_{SMOOTHING}.pkl"
+        T_counts = defaultdict(int)
+        tokenizer = get_tokenizer(TOKENIZER)
+        count_4, count_3, vocab, continuation_counts = lm_train(EN_TRAIN, tokenizer)
+        for (w1,w2,w3,w4) in count_4:
+            T_counts[(w1,w2,w3)] += 1
+        TOTAL_CONT = sum(continuation_counts.values())
         
         # print("Evaluating perplexity on test set...")
         # ppl = compute_perplexity(
@@ -303,3 +302,5 @@ run_autocomplete_tests()
 # with open("perplexity_values.txt", "w") as f:
 #     for model, ppl in ppls.items():
 #         f.write(f"{model}\t{ppl}\n")
+
+run_autocomplete_tests()
