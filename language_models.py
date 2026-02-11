@@ -3,6 +3,7 @@ from collections import defaultdict
 from tokenizer import get_tokenizer
 from utils import save_lm, load_lm
 import os
+import math
 
 EN_TRAIN = "dataset/EN/train.jsonl"
 EN_VAL   = "dataset/EN/val.jsonl"
@@ -12,9 +13,60 @@ START_TOKEN = "<s>"
 END_TOKEN   = "</s>"
 UNK_TOKEN   = "<UNK>"
 
+def next_token_prob(w1, w2, w3, w4,
+                    count_4, count_3,
+                    continuation_counts, vocab):
+    if SMOOTHING == "base":
+        if count_4[(w1,w2,w3,w4)] == 0:
+            return 0.0
+        return next_token_prob_base(w1,w2,w3,w4,count_4,count_3)
+
+    elif SMOOTHING == "witten_bell":
+        return prob_witten_bell(w1,w2,w3,w4,count_4,count_3,vocab)
+
+    elif SMOOTHING == "kneser_ney":
+        return prob_kneser_ney(
+            w1,w2,w3,w4,
+            count_4,count_3,
+            continuation_counts,vocab
+        )
+        
+def compute_perplexity(test_path, tokenizer,
+                       count_4, count_3,
+                       vocab, continuation_counts):
+    log_prob_sum = 0.0
+    token_count = 0
+
+    with open(test_path, "r", encoding="utf-8") as f:
+        for line in f:
+            text = json.loads(line)["text"]
+            tokens = tokenizer(text)
+            tokens = [START_TOKEN, START_TOKEN, START_TOKEN] + tokens + [END_TOKEN]
+
+            for i in range(len(tokens) - 3):
+                w1, w2, w3, w4 = tokens[i:i+4]
+
+                if w4 not in vocab:
+                    w4 = UNK_TOKEN
+
+                p = next_token_prob(
+                    w1,w2,w3,w4,
+                    count_4,count_3,
+                    continuation_counts,vocab
+                )
+
+                if p <= 0.0:
+                    return float("inf")
+
+                log_prob_sum += math.log(p)
+                token_count += 1
+
+    return math.exp(-log_prob_sum / token_count)
+
 def lm_train(train_path, tokenizer):
     if os.path.exists(MODEL_PATH):
         return load_lm(MODEL_PATH)
+
     count_4 = defaultdict(int)
     count_3 = defaultdict(int)
     vocab = set()
@@ -49,23 +101,40 @@ def next_token_prob_base(w1, w2, w3, w4, count_4, count_3):
 def prob_witten_bell(w1, w2, w3, w4, count_4, count_3, vocab):
     h = (w1, w2, w3)
     N = count_3[h]
-    T = len([1 for w in vocab if count_4[(w1,w2,w3,w)] > 0])
+    
+    if N == 0:
+        return 1 / len(vocab)
+    
+    T = T_counts.get((w1,w2,w3), 0)
 
     if count_4[(w1,w2,w3,w4)] > 0:
         return count_4[(w1,w2,w3,w4)] / (N + T)
     else:
         return T / (N + T) * (1 / len(vocab))
 
-def prob_kneser_ney(w1, w2, w3, w4, count_4, count_3,continuation_counts, vocab, D=0.75):
+def prob_kneser_ney(w1, w2, w3, w4, count_4, count_3, continuation_counts, vocab, D=0.75):
     h = (w1, w2, w3)
-    c_hw = count_4[(w1,w2,w3,w4)]
     c_h = count_3[h]
 
-    T = len([1 for w in vocab if count_4[(w1,w2,w3,w)] > 0])
+    if c_h == 0:
+        cont = continuation_counts.get(w4, 0)
+        if cont == 0:
+            return 1 / len(vocab)
+        return cont / TOTAL_CONT
 
-    p_cont = continuation_counts.get(w4, 0) / sum(continuation_counts.values())
+    c_hw = count_4[(w1, w2, w3, w4)]
+    T = T_counts.get(h, 0)
 
-    return max(c_hw - D, 0) / c_h + (D * T / c_h) * p_cont
+    cont = continuation_counts.get(w4, 0)
+    if cont == 0:
+        cont = 1
+    p_cont = cont / TOTAL_CONT
+    p = max(c_hw - D, 0) / c_h + (D * T / c_h) * p_cont
+
+    if p == 0.0:
+        return 1 / len(vocab)
+
+    return p
 
 def predict_next(context, count_4, count_3, vocab, continuation_counts):
     w1, w2, w3 = context
@@ -109,24 +178,33 @@ def autocomplete(prefix, tokenizer, count_4, count_3, vocab, continuation_counts
 
     return " ".join(tokens[3:])
 
-#regex, whitespace, bpe
-#base, kneser_ney, witten_bell
-TOKENIZER = "bpe"
-SMOOTHING = "base"
-MODEL_PATH = f"models/{TOKENIZER}_{SMOOTHING}.pkl"
+TOKENIZERS = ["regex", "whitespace", "bpe"]
+SMOOTHINGS = ["base", "kneser_ney", "witten_bell"]
+TOKENIZER = ""
+SMOOTHING = ""
+MODEL_PATH = ""
+ppls = {}
 
-tokenizer = get_tokenizer(TOKENIZER)
-
-print("Training 4-gram language model...")
-count_4, count_3, vocab, continuation_counts = lm_train(EN_TRAIN, tokenizer)
-
-# prompts = [
-#     "The government announced",
-#     "This is a",
-#     "According to the report"
-# ]
-
-# for p in prompts:
-#     print(f"> {p}")
-#     print(autocomplete(p, tokenizer, count_4, count_3, vocab))
-#     print()
+for TOKENIZER in TOKENIZERS:
+    for SMOOTHING in SMOOTHINGS:
+        MODEL_PATH = f"models/{TOKENIZER}_{SMOOTHING}.pkl"
+        T_counts = defaultdict(int)
+        tokenizer = get_tokenizer(TOKENIZER)
+        count_4, count_3, vocab, continuation_counts = lm_train(EN_TRAIN, tokenizer)
+        for (w1,w2,w3,w4) in count_4:
+            T_counts[(w1,w2,w3)] += 1
+        TOTAL_CONT = sum(continuation_counts.values())
+        
+        print("Evaluating perplexity on test set...")
+        ppl = compute_perplexity(
+            EN_TEST,
+            tokenizer,
+            count_4, count_3,
+            vocab,
+            continuation_counts
+        )
+        ppls[MODEL_PATH] = ppl
+        
+with open("perplexity_values.txt", "w") as f:
+    for model, ppl in ppls.items():
+        f.write(f"{model}\t{ppl}\n")
