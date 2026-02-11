@@ -1,0 +1,116 @@
+================================================================================
+MODEL: regex_base
+================================================================================
+
+PROMPT: in the United
+OUTPUT: in the United States .
+
+PROMPT: the economy is
+OUTPUT: the economy is doing well .
+
+PROMPT: climate change is
+OUTPUT: climate change is a foot away from the city center )
+
+================================================================================
+MODEL: regex_kneser_ney
+================================================================================
+
+PROMPT: the president of the
+OUTPUT: the president of the United States .
+
+PROMPT: deep learning models
+OUTPUT: deep learning models . . .
+
+PROMPT: the results of the
+OUTPUT: the results of the first to know about the . . .
+
+================================================================================
+MODEL: regex_witten_bell
+================================================================================
+
+PROMPT: quantum computing will
+OUTPUT: quantum computing will Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic
+
+PROMPT: artificial intelligence ethics
+OUTPUT: artificial intelligence ethics Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic
+
+PROMPT: the theory of relativity
+OUTPUT: the theory of relativity .
+
+================================================================================
+MODEL: whitespace_base
+================================================================================
+
+PROMPT: one of the most
+OUTPUT: one of the most important thing is to make sure that you are not a good idea to have a good time to start thinking about what
+
+PROMPT: the number of people
+OUTPUT: the number of people who have been in the past .
+
+PROMPT: machine learning is
+OUTPUT: machine learning is
+
+================================================================================
+MODEL: whitespace_kneser_ney
+================================================================================
+
+PROMPT: the number of people
+OUTPUT: the number of people who have been in the past .
+
+PROMPT: climate mitigation strategies
+OUTPUT: climate mitigation strategies . . .
+
+PROMPT: entropy regularization improves
+OUTPUT: entropy regularization improves . . .
+
+================================================================================
+MODEL: whitespace_witten_bell
+================================================================================
+
+PROMPT: the results of the
+OUTPUT: the results of the first things you will have to be a part of the world .
+
+PROMPT: protein folding process
+OUTPUT: protein folding process Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic
+
+PROMPT: the united nations
+OUTPUT: the united nations Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic Hygienic
+
+================================================================================
+MODEL: bpe_base
+================================================================================
+
+PROMPT: govern
+OUTPUT: go ver n the tr u th is th at the s am e ti me as se ar ch ing for a s im il ar
+
+PROMPT: internation
+OUTPUT: inter n a tion of the s am e ti me as se ar ch ing for a s im il ar to the s am
+
+PROMPT: electro
+OUTPUT: el ec tr o m ag az in e arti cl e and you would like to see a m an who ha d been a t
+
+================================================================================
+MODEL: bpe_kneser_ney
+================================================================================
+
+PROMPT: international trade agre
+OUTPUT: inter n a tion al tr ad e ag r e s ti ll have to ch ec k out the l as t year
+
+PROMPT: hyperparameter optimization
+OUTPUT: hyper par am et er op ti mi z a tion of the s am e ti me as se ar ch ing for a s im
+
+PROMPT: counterintuitively the
+OUTPUT: c ou n ter intu i tiv el y the s am e ti me as se ar ch ing for a s im il ar
+
+================================================================================
+MODEL: bpe_witten_bell
+================================================================================
+
+PROMPT: photosynthesis occurs
+OUTPUT: photo syn th es is oc cur s wh en you ar e a fe w m on ths ag o
+
+PROMPT: electroencephalogram
+OUTPUT: el ec t ro enc ep h al o gr am is a g re at de al wi th the s am e ti
+
+PROMPT: unbeliev
+OUTPUT: un b el i ev you b ec om e a m em b er of the s am e ti me as se ar ch

@@ -4,7 +4,7 @@ Bpe Base: inf
 
 Regex Kneser-ney: 413.73703489059756
 Whitespace Kneser-ney: 412.8570715141525
-Bpe Kneser-ney: output
+Bpe Kneser-ney: 37.52
 
 Regex Witten-bell: 11299.920597797072
 Whitespace Witten-bell: 11283.931636329178
