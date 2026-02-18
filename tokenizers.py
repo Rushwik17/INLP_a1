@@ -92,8 +92,6 @@ def bpe(data_path, output_path):
     
     for i in range(num_merges):
         bigram_freq = bigram_frequencies(vocab)
-        if not bigram_freq:
-            break
 
         best_bigram = max(bigram_freq, key=bigram_freq.get)
         vocab = merge_bigram(best_bigram, vocab)
