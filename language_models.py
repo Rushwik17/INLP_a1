@@ -110,31 +110,24 @@ def prob_witten_bell(w1, w2, w3, w4, count_4, count_3, vocab):
     if count_4[(w1,w2,w3,w4)] > 0:
         return count_4[(w1,w2,w3,w4)] / (N + T)
     else:
-        return T / (N + T) * (1 / len(vocab))
+        return T / (N + T) * (1 / (len(vocab)-T))
 
 def prob_kneser_ney(w1, w2, w3, w4, count_4, count_3, continuation_counts, vocab, D=0.75):
     h = (w1, w2, w3)
     c_h = count_3[h]
 
     if c_h == 0:
-        cont = continuation_counts.get(w4, 0)
-        if cont == 0:
-            return 1 / len(vocab)
-        return cont / TOTAL_CONT
+        cont = continuation_counts/TOTAL_CONT
 
     c_hw = count_4[(w1, w2, w3, w4)]
     T = T_counts.get(h, 0)
 
     cont = continuation_counts.get(w4, 0)
-    if cont == 0:
-        cont = 1
     p_cont = cont / TOTAL_CONT
-    p = max(c_hw - D, 0) / c_h + (D * T / c_h) * p_cont
-
-    if p == 0.0:
-        return 1 / len(vocab)
-
-    return p
+    if c_hw > 0:
+        return (c_hw - D) / c_h + (D * T / c_h) * p_cont
+    else:
+        return (D * T / c_h) * p_cont
 
 def predict_next(context, count_4, count_3, vocab, continuation_counts):
     w1, w2, w3 = context
