@@ -117,7 +117,7 @@ def prob_kneser_ney(w1, w2, w3, w4, count_4, count_3, continuation_counts, vocab
     c_h = count_3[h]
 
     if c_h == 0:
-        cont = continuation_counts/TOTAL_CONT
+        cont = continuation_counts.get(w4, 0)/TOTAL_CONT
 
     c_hw = count_4[(w1, w2, w3, w4)]
     T = T_counts.get(h, 0)
